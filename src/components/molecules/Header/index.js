@@ -53,15 +53,15 @@ const Header = ({noNavbar}) => {
                     <Navbar.Collapse id="navbarScroll" className="justify-content-center" >
                         <Nav>
                             <Nav.Link href="/" style={{ paddingRight:20 }}>
-                                <img width="auto" height="25" src={IcStarmall} />
+                                {/* <img width="auto" height="25" src={IcStarmall} /> */}
                             </Nav.Link>
                             <Nav.Link href="/sale-product" style={{ paddingRight:20, color:'#000000' }}>On Sale Now</Nav.Link>
-                            <Nav.Link style={{ color:'#000000' }}><img src={StarMallKategoriProduk}/> Kategori Produk</Nav.Link>
+                            {/* <Nav.Link style={{ color:'#000000' }}><img src={StarMallKategoriProduk}/> Kategori Produk</Nav.Link> */}
                             <Nav.Link href="/faq" style={{ color:'#000000' }}>FAQ</Nav.Link>
                             <Nav.Link href="https://starpoin.id/" target="_blank" style={{ color:'#000000' }}>StarPoin</Nav.Link>
-                            <Nav.Link style={{ color:'#000000' }}><img src={StarMallChat}/></Nav.Link>
-                            <Nav.Link style={{ color:'#000000' }}><img src={StarMallCart}/></Nav.Link>
-                            <Nav.Link style={{ color:'#000000', fontSize:10 }}><img src={StarMallUser}/> Daftar / Masuk</Nav.Link>
+                            {/* <Nav.Link style={{ color:'#000000' }}><img src={StarMallChat}/></Nav.Link> */}
+                            {/* <Nav.Link style={{ color:'#000000' }}><img src={StarMallCart}/></Nav.Link> */}
+                            {/* <Nav.Link style={{ color:'#000000', fontSize:10 }}><img src={StarMallUser}/> Daftar / Masuk</Nav.Link> */}
                         </Nav>
                     </Navbar.Collapse>
                     

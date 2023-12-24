@@ -15,6 +15,7 @@ import md5 from 'md5';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { Markup } from 'interweave';
 import { setForm } from '../../redux';
+import { LogoMethodist } from '../../assets';
 
 const Login = () => {
     const history = useHistory(historyConfig);
@@ -119,7 +120,7 @@ const Login = () => {
         <div className="main-page" style={{ justifyContent: "center", height: "100vh", backgroundColor: "#F6FBFF", paddingTop: "10%", paddingBottom: "10%" }}>
             <div className="right" style={{ borderRadius:15 }}>
                 <div style={{ display: 'flex', textAlign: 'center', alignItems: 'center', alignSelf: 'center' }}>
-                    <img style={{ width: 130, marginRight: 10, borderRadius: 4 }} />
+                    {/* <img src={LogoMethodist} style={{ width: 130, marginRight: 10, borderRadius: 4 }} /> */}
                 </div>
 
                 {ErrorMessageAlert !== "" ?
@@ -156,7 +157,7 @@ const Login = () => {
 
                 <Gap height={30} />
 
-                <p className="title">SIAM 1 - Login</p>
+                <p className="title" style={{ textAlign:'center' }}>Methodist 1</p>
 
                 <Input 
                     label="Username" 

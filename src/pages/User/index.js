@@ -4,11 +4,11 @@ import { useHistory } from 'react-router-dom';
 import { Header, Footer, Input, Button, Gap } from '../../components';
 import './Tab.css'
 import { useDispatch } from 'react-redux';
-import { AlertMessage, paths } from '../../utils'
 import { historyConfig, generateSignature, fetchStatus } from '../../utils/functions';
 import { setForm } from '../../redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import AdminAccess from './AdminAccess'
+import RoleAccess from './RoleAccess'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPerson } from '@fortawesome/free-solid-svg-icons';
 
@@ -25,41 +25,24 @@ const User = () => {
     const [ErrorMessageAlertLogout, setErrorMessageAlertLogout] = useState("")
 
     const [StateTabsAdminAccess, setStateTabsAdminAccess] = useState(true)
-
-    const handleScroll = (scrollOffset) => {
-        if (containerRef.current) {
-          containerRef.current.scrollLeft += scrollOffset;
-        }
-    };
+    const [StateTabsRoleAccess, setStateTabsRoleAccess] = useState(false)
 
 	useEffect(() => {
         window.scrollTo(0, 0)
+
+        var HistoryPage = cookies.varHistoryPage
+        console.log(HistoryPage)
+
+        if (HistoryPage === "role") {
+            setStateTabsAdminAccess(false)
+            setStateTabsRoleAccess(true)
+        }
+
+        setCookie('varHistoryPage', '')
+
     },[])
 
-	const getCookie = (tipe) => {
-        var SecretCookie = cookies.varCookie;
-        if (SecretCookie !== "" && SecretCookie != null && typeof SecretCookie=="string") {
-            var LongSecretCookie = SecretCookie.split("|");
-            var UserName = LongSecretCookie[0];
-            var ParamKeyArray = LongSecretCookie[1];
-            var Nama = LongSecretCookie[2];
-            var ParamKey = ParamKeyArray.substring(0, ParamKeyArray.length)
-        
-            if (tipe === "username") {
-                return UserName;            
-            } else if (tipe === "paramkey") {
-                return ParamKey;
-            } else if (tipe === "nama") {
-                return Nama;
-            } else {
-                return null;
-            }
-        } else {
-            return null;
-        }
-    }
-
-	const logout = ()=>{
+	const logout = () => {
         removeCookie('varCookie', { path: '/'})
         removeCookie('varMerchantId', { path: '/'})
         removeCookie('varIdVoucher', { path: '/'})
@@ -81,7 +64,7 @@ const User = () => {
                     <p style={{ margin:0 }}>Here's for all Admin from SIAM platform.</p>
 
                     {/* ALERT */}
-                    {SessionMessage != "" ?
+                    {SessionMessage !== "" ?
                     <SweetAlert 
                         warning 
                         show={ShowAlert}
@@ -95,7 +78,7 @@ const User = () => {
                     </SweetAlert>
                     :""}      
 
-                    {ErrorMessageAlert != "" ?
+                    {ErrorMessageAlert !== "" ?
                     <SweetAlert 
                         danger 
                         show={ShowAlert}
@@ -108,7 +91,7 @@ const User = () => {
                     </SweetAlert>
                     :""}
 
-                    {ErrorMessageAlertLogout != "" ?
+                    {ErrorMessageAlertLogout !== "" ?
                     <SweetAlert 
                         danger 
                         show={ShowAlert}
@@ -125,20 +108,40 @@ const User = () => {
                     
                     <Gap height={20} />
 
-                    {StateTabsAdminAccess &&
+                    {StateTabsAdminAccess ?
                     <div>
                         <div style={{ display:'flex' }}>
                             <div>
                                 <button role="tab" aria-controls="merchant-list">
-                                    <div style={{ color:'#004372', fontSize:16 }}>Admin Access</div>
+                                    <div style={{ color:'#004372', fontSize:16, fontWeight:'bold' }}>Admin Access</div>
                                 </button>
                                 <section id="merchant-list"></section>
                             </div>
+                            <div style={{ color:'#004372', paddingLeft:30, fontSize:16, cursor:'pointer', fontWeight:'bold' }} onClick={() => {
+                                setStateTabsAdminAccess(false)
+                                setStateTabsRoleAccess(true)
+                            }}>Role Access</div>
                         </div>
-                    </div>}
+                    </div>
+                    :
+                    <div style={{ display:'flex' }}>
+                        <div style={{ color:'#004372', paddingRight:30, paddingLeft:30, fontSize:16, cursor:'pointer', fontWeight:'bold' }} onClick={() => {
+                        setStateTabsAdminAccess(true)
+                        setStateTabsRoleAccess(false)
+                        }}>Admin Access</div>
+                        <div>
+                            <button role2="tab2" aria-controls="merchant-list">
+                                <div style={{ color:'#004372', fontSize:16, fontWeight:'bold' }}>Role Access</div>
+                            </button>
+                            <section id="merchant-list"></section>
+                        </div>
+                    </div>
+                    }
 
-                    {StateTabsAdminAccess &&
-                        <AdminAccess></AdminAccess>
+                    {StateTabsAdminAccess ?
+                    <AdminAccess />
+                    :
+                    <RoleAccess />
                     }
 
                     <Gap height={10} />

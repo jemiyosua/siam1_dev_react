@@ -4,8 +4,6 @@ import { useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Login from '../../pages/Login';
 import MainApp from '../../pages/MainApp';
-import FAQ from '../../pages/Faq';
-import SaleProduct from '../../pages/SaleProdut';
 // import MainApp from '../../admin/pages/MainApp';
 
 const Routes = () => {
@@ -24,11 +22,14 @@ const Routes = () => {
 				<Route path='/admin/input-admin-access'>
 					<MainApp/>
 				</Route>
-				<Route path='/faq'>
-					<FAQ/>
+				<Route path='/admin/update-admin-access'>
+					<MainApp/>
 				</Route>
-				<Route path='/sale-product'>
-					<SaleProduct/>
+				<Route path='/admin/input-role-access'>
+					<MainApp/>
+				</Route>
+				<Route path='/admin/update-role-access'>
+					<MainApp/>
 				</Route>
 				{/* <Route path='/:post'>
 					<Post/>

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router-dom';
 import { Header, Footer, Input, Button, Gap, Dropdown } from '../../../../components';
+// import './User.css'
 import { useDispatch } from 'react-redux';
 import { AlertMessage, paths } from '../../../../utils'
 import { historyConfig, generateSignature, fetchStatus } from '../../../../utils/functions';
@@ -9,7 +10,7 @@ import { setForm } from '../../../../redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { Col, Row, Form, ListGroup, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Markup } from 'interweave';
 
@@ -19,20 +20,13 @@ const InputAdminAccess = () => {
     const containerRef = useRef(null);
     // const [cookies, setCookie,removeCookie] = useCookies(['user']);
 	const [cookies, setCookie,removeCookie] = useCookies(['user']);
-	const [Name, setName] = useState("")
-	const [Loading, setLoading] = useState(false)
-	const [LoadingStatus, setLoadingStatus] = useState(false)
-    const [IdIndex, setIdIndex] = useState("")
-    const [isHovering, setIsHovering] = useState(false)
-    const [isHoveringNoEdit, setIsHoveringNoEdit] = useState(false)
 
-    const [AccessAdminLogin, setAccessAdminLogin] = useState("")
-
-    const [UserLogin, setUserLogin] = useState("")
+    const [LoadingSave, setLoadingSave] = useState(false)
+    const [Username, setUsername] = useState("")
     const [Nama, setNama] = useState("")
     const [Password, setPassword] = useState("")
     const [RePassword, setRePassword] = useState("")
-	
+
 	const [ShowAlert, setShowAlert] = useState(true)
     const [SessionMessage, setSessionMessage] = useState("")
     const [SuccessMessage, setSuccessMessage] = useState("")
@@ -40,27 +34,18 @@ const InputAdminAccess = () => {
     const [ErrorMessageAlertLogout, setErrorMessageAlertLogout] = useState("")
     const [ValidationMessage, setValidationMessage] = useState("")
 
-
-    const handleScroll = (scrollOffset) => {
-        if (containerRef.current) {
-          containerRef.current.scrollLeft += scrollOffset;
-        }
-    };
-
 	useEffect(() => {
         window.scrollTo(0, 0)
-
-        // getListUser(1, "")
-
     },[])
 
 	const getCookie = (tipe) => {
         var SecretCookie = cookies.varCookie;
-        if (SecretCookie !== "" && SecretCookie != null && typeof SecretCookie=="string") {
+        if (SecretCookie !== "" && SecretCookie != null && typeof SecretCookie == "string") {
             var LongSecretCookie = SecretCookie.split("|");
             var UserName = LongSecretCookie[0];
             var ParamKeyArray = LongSecretCookie[1];
             var Nama = LongSecretCookie[2];
+            var Role = LongSecretCookie[3];
             var ParamKey = ParamKeyArray.substring(0, ParamKeyArray.length)
         
             if (tipe === "username") {
@@ -69,6 +54,8 @@ const InputAdminAccess = () => {
                 return ParamKey;
             } else if (tipe === "nama") {
                 return Nama;
+            } else if (tipe === "role") {
+                return Role;
             } else {
                 return null;
             }
@@ -76,27 +63,125 @@ const InputAdminAccess = () => {
             return null;
         }
     }
-
-    const handleMouseOver = (Id, idx, position) => {
-        var IdIndex = idx.IdVoucher
-
-        if (position == "edit") {
-            setIdIndex(Id)
-            if (Id === IdIndex) {
-                setIsHovering(true)
-            }
-        } else {
-            setIdIndex(Id)
-            setIsHoveringNoEdit(true)
-        }
-    };
     
-    const handleMouseOut = () => {
-        setIdIndex("")
-        setIsHovering(false)
-        setIsHoveringNoEdit(false)
-        // setEditablePrice(false)
-    };
+    const simpanData = () => {
+
+        let validasiMessage = "";
+
+        if (Username === "") {
+            validasiMessage = validasiMessage + "- Silahkan isi Username terlebih dahulu.\n";
+        } else if (Username.length < 5) {
+            validasiMessage = validasiMessage + "- Username minimal 5 karakter.\n";
+        } else if (Username.length > 50) {
+            validasiMessage = validasiMessage + "- Username maksimal 50 karakter.\n";
+        }
+
+        if (Nama === "") {
+            validasiMessage = validasiMessage + "- Silahkan isi Nama User terlebih dahulu.\n";
+        } else if (Nama.length < 5) {
+            validasiMessage = validasiMessage + "- Nama User minimal 5 karakter.\n";
+        } else if (Nama.length > 50) {
+            validasiMessage = validasiMessage + "- Nama User maksimal 50 karakter.\n";
+        }
+
+        if (Password === "") {
+            validasiMessage = validasiMessage + "- Silahkan isi password terlebih dahulu.\n";
+        } else if (Password.length < 1) {
+            validasiMessage = validasiMessage + "- Password minimal 1 digit/karakter.\n";
+        }
+
+        if (RePassword === "") {
+            validasiMessage = validasiMessage + "- Silahkan isi re password terlebih dahulu.\n";
+        }
+
+        if (Password !== RePassword) {
+            validasiMessage = validasiMessage + "- password dan Re password harus sama\n";
+        }
+
+        // if(Access === ""){
+        //     validasiMessage = validasiMessage + "- Silahkan pilih Akses menu terlebih dahulu.\n";
+        // }
+
+        
+        
+        if(validasiMessage !== ""){
+            setValidationMessage(validasiMessage);
+            setShowAlert(true)
+            return false;
+        }
+
+        // if (Access == "VIEWER") {
+        //     Menu = "2"
+        // } else if (Access == "CS") {
+        //     Menu = "2,7"
+        // } else if (Access == "EDITOR") {
+        //     Menu = "1,2,3,4,5,6,7"
+        // } else if (Access == "ADMINISTRATOR") {
+        //     Menu = "1,2,3,4,5,6,7"
+        // }
+
+		var CookieParamKey = getCookie("paramkey");
+        var CookieUsername = getCookie("username");
+
+		var requestBody = JSON.stringify({
+            "UsernameSession": CookieUsername,
+            "ParamKey": CookieParamKey,
+            "Method": "INSERT",
+            "UsernameMaster": Username,
+            "Nama": Nama,
+            "Password": Password,
+            "Role": "ADMINISTRATOR"
+		});
+
+		var url = paths.URL_API_ADMIN + 'UserLogin';
+		var Signature  = generateSignature(requestBody)
+
+        setLoadingSave(true)
+
+		fetch(url, {
+			method: "POST",
+			body: requestBody,
+			headers: {
+				'Content-Type': 'application/json',
+				'Signature': Signature
+			},
+		})
+		.then(fetchStatus)
+		.then(response => response.json())
+		.then((data) => {
+
+            setLoadingSave(false)
+
+			if (data.ErrCode === "0") {
+                setSuccessMessage("Berhasil Insert Data")
+                setShowAlert(true)
+			} else {
+				if (data.ErrCode === "2") {
+					setSessionMessage("Session Anda Telah Habis. Silahkan Login Kembali.");
+                    setShowAlert(true);
+					return false;
+				} else {
+					setErrorMessageAlert(data.ErrMessage);
+					setShowAlert(true);
+					return false;
+				}
+			}
+		})
+		.catch((error) => {
+
+            setLoadingSave(false)
+
+			if (error.message === 401) {
+				setErrorMessageAlert("Maaf anda tidak memiliki ijin untuk mengakses halaman ini.");
+				setShowAlert(true);
+				return false;
+			} else if (error.message !== 401) {
+				setErrorMessageAlert(AlertMessage.failedConnect);
+				setShowAlert(true);
+				return false;
+			}
+		});
+    }
 
 	const logout = ()=>{
         removeCookie('varCookie', { path: '/'})
@@ -106,69 +191,68 @@ const InputAdminAccess = () => {
         dispatch(setForm("Username",''))
         dispatch(setForm("Name",''))
         dispatch(setForm("Role",''))
-        if(window){
+        if (window) {
             sessionStorage.clear();
 		}
     }
     
     return (
-		<div className="main-page" style={{backgroundColor:'white', marginTop:30, borderRadius:10, marginRight:20}}>
-            {/* ALERT */}
-            {SessionMessage != "" ?
-            <SweetAlert 
-                warning 
-                show={ShowAlert}
-                onConfirm={() => {
-                    logout()
-                    setShowAlert(false)
-                    // setSessionMessage("")
-                    window.location.href="admin/login";
-                }}
-                btnSize="sm">
-                {SessionMessage}
-            </SweetAlert>
-            :""}
+		<div>
+			{SessionMessage !== "" ?
+			<SweetAlert 
+				warning 
+				show={ShowAlert}
+				onConfirm={() => {
+					setShowAlert(false)
+					logout()
+					window.location.href="/";
+				}}
+				btnSize="sm">
+				{SessionMessage}
+			</SweetAlert>
+			:""}
 
-            {SuccessMessage != "" ?
-            <SweetAlert 
-                success 
-                show={ShowAlert}
-                onConfirm={() => {
-                    setShowAlert(false)
-                    setSuccessMessage("")
-                    history.push("/user")
-                }}
-                btnSize="sm">
-                {SuccessMessage}
-            </SweetAlert>
-            :""}          
+			{SuccessMessage !== "" ?
+			<SweetAlert 
+				success 
+				show={ShowAlert}
+				onConfirm={() => {
+					setShowAlert(false)
+					setSuccessMessage("")
+					history.replace("/user")
+				}}
+				btnSize="sm">
+				{SuccessMessage}
+			</SweetAlert>
+			:""}
+            
+            {ErrorMessageAlert !== "" ?
+			<SweetAlert 
+				danger
+				show={ShowAlert}
+				onConfirm={() => {
+					setShowAlert(false)
+					setErrorMessageAlert("")
+				}}
+				btnSize="sm">
+				{ErrorMessageAlert}
+			</SweetAlert>
+			:""}
 
-            {ErrorMessageAlert != "" ?
-            <SweetAlert 
-                danger 
-                show={ShowAlert}
-                onConfirm={() => {
-                    setShowAlert(false)
-                    setErrorMessageAlert("")
-                }}
-                btnSize="sm">
-                {ErrorMessageAlert}
-            </SweetAlert>
-            :""}
-
-            {ErrorMessageAlertLogout != "" ?
-            <SweetAlert 
-                danger 
-                show={ShowAlert}
-                onConfirm={() => {
-                    setShowAlert(false)
-                    setErrorMessageAlertLogout("")
-                    window.location.href="admin/login";
-                }}
-                btnSize="sm">
-                {ErrorMessageAlertLogout}
-            </SweetAlert>
-            :""}
+			{ErrorMessageAlertLogout !== "" ?
+			<SweetAlert 
+				danger 
+				show={ShowAlert}
+				onConfirm={() => {
+					setShowAlert(false)
+					setErrorMessageAlertLogout("")
+					window.location.href="admin/login";
+				}}
+				btnSize="sm">
+				{ErrorMessageAlertLogout}
+			</SweetAlert>
+			:""}
+            
             {ValidationMessage !== "" ?
             <SweetAlert
                 show={ShowAlert}
@@ -187,24 +271,29 @@ const InputAdminAccess = () => {
                 )}
             </SweetAlert>
             :""}
-            {/* END OF ALERT */}
-            <Gap height={20} />
-            <div style={{backgroundColor:'white', height:'auto', width:'100%', borderBottomLeftRadius:25, borderBottomRightRadius:25, padding:20, paddingTop:30}}>
-                <div style={{display:'flex', justifyContent:'space-between', padding:30}}>
-                    <div style={{display:'flex', justifyContent:'flex-start', color:'#61308C', fontWeight:'bold', paddingTop:10, cursor:'pointer'}} onClick={() => history.push('/user')} >
-                        <div style={{ fontWeight:'bold' }}><FontAwesomeIcon icon={faArrowLeft} /> Back</div>
-                    </div>
+            
+            <div>
+                <button role="tab" aria-controls="merchant-list">
+                    <div style={{ color:'#004372', fontSize:16, fontWeight:'bold' }}>Input Admin Access</div>
+                </button>
+            </div>
+            
+            <div style={{ backgroundColor:'#FFFFFF', height:'auto', width:'100%', borderBottomLeftRadius:25, borderBottomRightRadius:25, padding:20 }}>
+                
+                <div style={{ backgroundColor:'#FFFFFF', height:'auto', width:'100%', borderBottomLeftRadius:25, borderBottomRightRadius:25, borderTopRightRadius:25, padding:20, paddingTop:30 }}>
+                    <div style={{ color:'#004372', cursor:'pointer' }} onClick={() => history.push('/user')}><FontAwesomeIcon icon={faArrowLeft} /> Back</div>
                 </div>
+
                 <div style={{padding:20}}>
                     <Row>
                         <Col xs={12} md={6} lg={6}>
                             <div>
-                            <div className='InputLabel'>User Login</div>
+                            <div className='InputLabel'>Username</div>
                                 <div>
                                     <Input
                                         required
-                                        value={UserLogin}
-                                        onChange={event => setUserLogin(event.target.value)}
+                                        value={Username}
+                                        onChange={event => setUsername(event.target.value)}
                                     />
                                 </div>
                             </div>
@@ -289,24 +378,81 @@ const InputAdminAccess = () => {
                             /> Administrator
                         </div>
                     </div> */}
-
                     <Gap height={10}></Gap>
 
                     <hr/>
 
                     <Gap height={10}></Gap>
+                    {/* {InfoAccess ?
+                    <div>
+                        <div style={{ backgroundColor:'#EEEEEE', borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10, height:'100%' }}>
+                            <div style={{ padding:10 }}>
+                                <div style={{ color:'#61308C', fontWeight:'bold' }}>Viewer</div>
+                                <div>
+                                    <ul>
+                                        <li>Only view StarPoin report</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <Gap height={10}></Gap>
+                        <div style={{ backgroundColor:'#EEEEEE', borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10, height:'100%' }}>
+                            <div style={{ padding:10 }}>
+                                <div style={{ color:'#61308C', fontWeight:'bold' }}>CS</div>
+                                <div>
+                                    <ul>
+                                        <li>Only view CS dashboard menu</li>
+                                        <li>Can view StarPoin Report</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <Gap height={10}></Gap>
+                        <div style={{ backgroundColor:'#EEEEEE', borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10, height:'100%' }}>
+                            <div style={{ padding:10 }}>
+                                <div style={{ color:'#61308C', fontWeight:'bold' }}>Editor</div>
+                                <div>
+                                    <ul>
+                                        <li>Can view overview dashboard</li>
+                                        <li>Can view StarPoin Report</li>
+                                        <li>All access merchant menu</li>
+                                        <li>All access content menu</li>
+                                        <li>All access marketing menu</li>
+                                        <li>All access star-voucher menu</li>
+                                        <li>Only view other menu</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <Gap height={10}></Gap>
+                        <div style={{ backgroundColor:'#EEEEEE', borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10, height:'100%' }}>
+                            <div style={{ padding:10 }}>
+                                <div style={{ color:'#61308C', fontWeight:'bold' }}>Administrator</div>
+                                <div>
+                                    <ul>
+                                        <li>All access dashboard StarPoin</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
 
+                    </div>
+                    :""} */}
                 </div>
-
-                <Gap height={20}></Gap>
 
                 <div style={{display:'flex', justifyContent:'flex-end', padding:20}}>
-                    <Button style={{backgroundColor:'#3A379F', width:200, textAlign:'center'}}> Save Changes
-                    </Button>
+                    {LoadingSave ?
+                    <div className="loader-container-small">
+                        <div className="spinner-small" />
+                    </div>
+                    :
+                    <div style={{ border:'2px solid #004372', padding:10, borderWidth:1, width:'auto', height:'auto', borderTopLeftRadius:15, borderTopRightRadius:15, borderBottomLeftRadius:15, borderBottomRightRadius:15, cursor:'pointer' }} onClick={() => simpanData()}>
+                        <div style={{ fontWeight:'bold', fontSize:13 }}><FontAwesomeIcon icon={faCheckCircle} /> Save Changes</div>
+                    </div>
+                    }
                 </div>
             </div>
-            <Gap height={10} />
-        </div>
+		</div>
     )
 }
 

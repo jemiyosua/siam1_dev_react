@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import { useCookies } from 'react-cookie'
-import { FaBars } from 'react-icons/fa'
 import { useSelector } from 'react-redux'
 import { BrowserRouter , Route, Switch, useHistory, useRouteMatch } from 'react-router-dom'
-import { Header } from '../../components'
 import LeftMenu from '../../components/molecules/LeftMenu'
 import { historyConfig } from '../../utils/functions'
 import Dashboard from '../Dashboard'
 import User from '../User'
 import InputAdminAccess from '../User/AdminAccess/InputAdminAccess'
+import UpdateAdminAccess from '../User/AdminAccess/UpdateAdminAccess'
+import InputRoleAccess from '../User/RoleAccess/InputRoleAccess'
+import UpdateRoleAccess from '../User/RoleAccess/UpdateRoleAccess'
 
 const MainApp = () => {
     const history = useHistory(historyConfig);
@@ -16,9 +17,6 @@ const MainApp = () => {
     let match = useRouteMatch();
     const [cookies, setCookie,removeCookie] = useCookies(['user']);
 
-    const [rtl, setRtl] = useState(false);
-    const [collapsed, setCollapsed] = useState(false);
-    const [image, setImage] = useState(true);
     const [toggled, setToggled] = useState(false);
 
     const handleToggleSidebar = (value) => {
@@ -56,6 +54,15 @@ const MainApp = () => {
                             </Route>
                             <Route exact path="/input-admin-access">
                                 <InputAdminAccess />
+                            </Route>
+                            <Route exact path="/update-admin-access">
+                                <UpdateAdminAccess />
+                            </Route>
+                            <Route exact path="/input-role-access">
+                                <InputRoleAccess />
+                            </Route>
+                            <Route exact path="/update-role-access">
+                                <UpdateRoleAccess />
                             </Route>
                         </Switch>
                     </BrowserRouter>

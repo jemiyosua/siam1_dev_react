@@ -26,6 +26,34 @@ const InputAdminAccess = () => {
     const [Nama, setNama] = useState("")
     const [Password, setPassword] = useState("")
     const [RePassword, setRePassword] = useState("")
+    const [ListAccess, setListAccess] = useState([
+        {
+            "Id": "1",
+            "Access": "ADMINISTRATOR",
+            "Status": "1"
+        },
+        {
+            "Id": "2",
+            "Access": "SISWA",
+            "Status": "1"
+        },
+        {
+            "Id": "3",
+            "Access": "GURU",
+            "Status": "1"
+        },
+        {
+            "Id": "4",
+            "Access": "STAFF",
+            "Status": "1"
+        },
+        {
+            "Id": "5",
+            "Access": "ORANG TUA",
+            "Status": "0"
+        }
+    ])
+    const [Access, setAccess] = useState("")
 
 	const [ShowAlert, setShowAlert] = useState(true)
     const [SessionMessage, setSessionMessage] = useState("")
@@ -98,9 +126,9 @@ const InputAdminAccess = () => {
             validasiMessage = validasiMessage + "- password dan Re password harus sama\n";
         }
 
-        // if(Access === ""){
-        //     validasiMessage = validasiMessage + "- Silahkan pilih Akses menu terlebih dahulu.\n";
-        // }
+        if(Access === ""){
+            validasiMessage = validasiMessage + "- Silahkan pilih Akses menu terlebih dahulu.\n";
+        }
 
         
         
@@ -130,7 +158,7 @@ const InputAdminAccess = () => {
             "UsernameMaster": Username,
             "Nama": Nama,
             "Password": Password,
-            "Role": "ADMINISTRATOR"
+            "Role": Access
 		});
 
 		var url = paths.URL_API_ADMIN + 'UserLogin';
@@ -339,105 +367,29 @@ const InputAdminAccess = () => {
                         </Col>
                     </Row>
 
-                    {/* <div style={{ color:'#61308C', fontWeight:'bold', paddingTop:30, display:'flex', alignItems:'center' }}>
-                        Access 
-                        &nbsp;
-                        {InfoAccess ?
-                        <img src={IconMinus} style={{ width:20, height:20, cursor:'pointer' }} onClick={() => setInfoAccess(false)}></img>
-                        :
-                        <img src={IconInfo} style={{ width:20, height:20, cursor:'pointer' }} onClick={() => setInfoAccess(true)}></img>
-                        }
-                    </div> */}
-                    {/* <div>
-                        <div style={{paddingTop:5}}>
-                            <input type="radio" value="VIEWER"
-                                style={{padding:10}}
-                                checked={Access=="VIEWER"}
-                                onChange={event => setAccess(event.target.value)}
-                            /> Viewer
-                            &nbsp;
-                            &nbsp;
-                            <input type="radio" value="CS"
-                                style={{padding:10}}
-                                checked={Access=="CS"}
-                                onChange={event=>setAccess(event.target.value)}
-                            /> CS
-                            &nbsp;
-                            &nbsp;
-                            <input type="radio" value="EDITOR"
-                                style={{padding:10}}
-                                checked={Access=="EDITOR"}
-                                onChange={event=>setAccess(event.target.value)}
-                            /> Editor
-                            &nbsp;
-                            &nbsp;
-                            <input type="radio" value="ADMINISTRATOR" 
-                                style={{padding:10}}
-                                checked={Access=="ADMINISTRATOR"}
-                                onChange={event=>setAccess(event.target.value)}
-                            /> Administrator
-                        </div>
-                    </div> */}
-                    <Gap height={10}></Gap>
+                    <hr />
 
-                    <hr/>
-
-                    <Gap height={10}></Gap>
-                    {/* {InfoAccess ?
+                    <div style={{ fontWeight:'bold' }}>Access</div>
+                    
                     <div>
-                        <div style={{ backgroundColor:'#EEEEEE', borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10, height:'100%' }}>
-                            <div style={{ padding:10 }}>
-                                <div style={{ color:'#61308C', fontWeight:'bold' }}>Viewer</div>
-                                <div>
-                                    <ul>
-                                        <li>Only view StarPoin report</li>
-                                    </ul>
+                        <div style={{ paddingTop: 5, display: 'flex' }}>
+                            {ListAccess.length > 0 && ListAccess.map((item,index) => {
+                                return <div style={{ marginRight:30, display:'flex' }}>
+                                    <input
+                                        disabled={item.Status === "1" ? false : true}
+                                        type="radio" 
+                                        value={item.Access}
+                                        style={{ padding:10 }}
+                                        checked={Access === item.Access}
+                                        onChange={event => setAccess(event.target.value)}
+                                    />
+                                    <div style={{ marginRight:10 }} />
+                                    <div style={{ color: item.Status === "1" ? '#000000' : 'red', opacity: item.Status === "1" ? 1 : .3 }}>{item.Access}</div>
                                 </div>
-                            </div>
+                            })}
                         </div>
-                        <Gap height={10}></Gap>
-                        <div style={{ backgroundColor:'#EEEEEE', borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10, height:'100%' }}>
-                            <div style={{ padding:10 }}>
-                                <div style={{ color:'#61308C', fontWeight:'bold' }}>CS</div>
-                                <div>
-                                    <ul>
-                                        <li>Only view CS dashboard menu</li>
-                                        <li>Can view StarPoin Report</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <Gap height={10}></Gap>
-                        <div style={{ backgroundColor:'#EEEEEE', borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10, height:'100%' }}>
-                            <div style={{ padding:10 }}>
-                                <div style={{ color:'#61308C', fontWeight:'bold' }}>Editor</div>
-                                <div>
-                                    <ul>
-                                        <li>Can view overview dashboard</li>
-                                        <li>Can view StarPoin Report</li>
-                                        <li>All access merchant menu</li>
-                                        <li>All access content menu</li>
-                                        <li>All access marketing menu</li>
-                                        <li>All access star-voucher menu</li>
-                                        <li>Only view other menu</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-                        <Gap height={10}></Gap>
-                        <div style={{ backgroundColor:'#EEEEEE', borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10, height:'100%' }}>
-                            <div style={{ padding:10 }}>
-                                <div style={{ color:'#61308C', fontWeight:'bold' }}>Administrator</div>
-                                <div>
-                                    <ul>
-                                        <li>All access dashboard StarPoin</li>
-                                    </ul>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-                    :""} */}
+
                 </div>
 
                 <div style={{display:'flex', justifyContent:'flex-end', padding:20}}>

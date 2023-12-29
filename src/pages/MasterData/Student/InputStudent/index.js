@@ -67,6 +67,7 @@ const InputAdminAccess = () => {
 
         var CookieParamKey = getCookie("paramkey");
         var CookieUsername = getCookie("username");
+        var CookieRole = getCookie("role");
         
         if (CookieParamKey == null || CookieParamKey === "" || CookieUsername == null || CookieUsername === "") {
             logout()

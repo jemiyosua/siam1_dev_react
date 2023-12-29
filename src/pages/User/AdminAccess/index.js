@@ -214,7 +214,7 @@ const AdminAccess = () => {
     const updateStatusUser = (IdUserlogin, Status) => {
 
         var vStatus = ""
-        if (Status === 0) {
+        if (Status === "0") {
             vStatus = "1"
         } else {
             vStatus = "0"

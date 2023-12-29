@@ -11,6 +11,7 @@ import InputAdminAccess from '../User/AdminAccess/InputAdminAccess'
 import UpdateAdminAccess from '../User/AdminAccess/UpdateAdminAccess'
 import InputRoleAccess from '../User/RoleAccess/InputRoleAccess'
 import UpdateRoleAccess from '../User/RoleAccess/UpdateRoleAccess'
+import Student from '../MasterData/Student'
 
 const MainApp = () => {
     const history = useHistory(historyConfig);
@@ -52,6 +53,9 @@ const MainApp = () => {
                             </Route>
                             <Route exact path="/master-data">
                                 <MasterData />
+                            </Route>
+                            <Route exact path="/student">
+                                <Student />
                             </Route>
                             <Route exact path="/user">
                                 <User />

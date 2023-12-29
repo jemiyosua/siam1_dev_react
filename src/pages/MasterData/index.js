@@ -23,6 +23,9 @@ const User = () => {
 	
     const [Loading, setLoading] = useState(false)
     const [ListSubMenu, setListSubMenu] = useState([])
+    const [IdIndex, setIdIndex] = useState("")
+    const [isHovering, setIsHovering] = useState(false)
+    const [isHoveringNoEdit, setIsHoveringNoEdit] = useState(false)
 
 	const [ShowAlert, setShowAlert] = useState(true)
     const [SessionMessage, setSessionMessage] = useState("")
@@ -149,6 +152,20 @@ const User = () => {
 		});
     }
 
+    const handleMouseOver = (Id, idx) => {
+        var IdIndex = idx.Id
+
+        setIdIndex(Id)
+        if (Id === IdIndex) {
+            setIsHovering(true)
+        }
+    };
+    
+    const handleMouseOut = () => {
+        setIdIndex("")
+        setIsHovering(false)
+    };
+
 	const logout = () => {
         removeCookie('varCookie', { path: '/'})
         removeCookie('varMerchantId', { path: '/'})
@@ -236,13 +253,26 @@ const User = () => {
                                 } else {
                                     Icon = <FontAwesomeIcon icon={faGear}/>
                                 }
-                                return  <div style={{ backgroundColor:'#EAECEE', width:'100%', marginBottom:10, borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10 }}>
-                                    <div style={{ display:'flex', padding:20, alignItems:'center', justifyContent:'space-between' }}>
-                                        <div style={{ display:'flex', alignItems:'center', fontWeight:'bold' }}>
-                                            {Icon}<div style={{ paddingRight:10 }} />{item.SubMenu}
+                                console.log(item.Href)
+                                return  <div style={{ 
+                                    backgroundColor:'#EAECEE', 
+                                    width:'100%', 
+                                    marginBottom:10, 
+                                    borderTopLeftRadius:10, 
+                                    borderTopRightRadius:10, 
+                                    borderBottomLeftRadius:10, 
+                                    borderBottomRightRadius:10,
+                                    border:item.Id === IdIndex && isHovering && '2px solid #004372',
+                                    borderColor:item.Id === IdIndex && isHovering && '#004372',
+                                    }} onMouseOver={() => handleMouseOver(item.Id, item)} onMouseOut={handleMouseOut}>
+                                    <a href={item.Href} style={{ textDecoration:'none' }}>
+                                        <div style={{ display:'flex', padding:20, alignItems:'center', justifyContent:'space-between', cursor:'pointer' }}>
+                                            <div style={{ display:'flex', alignItems:'center', fontWeight:'bold', color:'#004372' }}>
+                                                {Icon}<div style={{ paddingRight:10 }} />{item.SubMenu}
+                                            </div>
+                                            <FontAwesomeIcon icon={faChevronRight}/>
                                         </div>
-                                        <FontAwesomeIcon icon={faChevronRight}/>
-                                    </div>
+                                    </a>
                                 </div>
                             })}
                         </Col>

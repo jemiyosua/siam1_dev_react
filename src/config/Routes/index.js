@@ -19,6 +19,9 @@ const Routes = () => {
 				<Route path='/admin/master-data'>
 					<MainApp/>
 				</Route>
+				<Route path='/admin/student'>
+					<MainApp/>
+				</Route>
 				<Route path='/admin/user'>
 					<MainApp/>
 				</Route>

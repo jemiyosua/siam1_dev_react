@@ -10,11 +10,11 @@ import { setForm } from '../../../../redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import { Col, Row, Form, ListGroup, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowLeft, faCheckCircle, faCircle } from '@fortawesome/free-solid-svg-icons';
+import { faArrowLeft, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Markup } from 'interweave';
 
-const InputAdminAccess = () => {
+const UpdateAdminAccess = () => {
     const history = useHistory(historyConfig);
     const dispatch = useDispatch();
     const containerRef = useRef(null);
@@ -26,6 +26,7 @@ const InputAdminAccess = () => {
     const [Nama, setNama] = useState("")
     const [Password, setPassword] = useState("")
     const [RePassword, setRePassword] = useState("")
+    const [UserId, setUserId] = useState("")
     const [ListAccess, setListAccess] = useState([
         {
             "Id": "1",
@@ -54,7 +55,7 @@ const InputAdminAccess = () => {
         }
     ])
     const [Access, setAccess] = useState("")
-
+	
 	const [ShowAlert, setShowAlert] = useState(true)
     const [SessionMessage, setSessionMessage] = useState("")
     const [SuccessMessage, setSuccessMessage] = useState("")
@@ -76,12 +77,16 @@ const InputAdminAccess = () => {
             dispatch(setForm("ParamKey",CookieParamKey))
             dispatch(setForm("Username",CookieUsername))
             dispatch(setForm("PageActive","User"))
+
+            getDetailUser()
         }
 
     },[])
 
 	const getCookie = (tipe) => {
         var SecretCookie = cookies.varCookie;
+        var UserId = cookies.varUserId;
+
         if (SecretCookie !== "" && SecretCookie != null && typeof SecretCookie == "string") {
             var LongSecretCookie = SecretCookie.split("|");
             var UserName = LongSecretCookie[0];
@@ -91,19 +96,84 @@ const InputAdminAccess = () => {
             var ParamKey = ParamKeyArray.substring(0, ParamKeyArray.length)
         
             if (tipe === "username") {
-                return UserName;            
+                return UserName       
             } else if (tipe === "paramkey") {
-                return ParamKey;
+                return ParamKey
             } else if (tipe === "nama") {
-                return Nama;
+                return Nama
             } else if (tipe === "role") {
-                return Role;
+                return Role
+            } else if (tipe === "userid") {
+                return UserId
             } else {
-                return null;
+                return null
             }
         } else {
-            return null;
+            return null
         }
+    }
+
+    const getDetailUser = () => {
+
+		var CookieParamKey = getCookie("paramkey");
+        var CookieUsername = getCookie("username");
+        var UserId = getCookie("userid");
+
+        setUserId(UserId)
+
+		var requestBody = JSON.stringify({
+			"UsernameSession": CookieUsername,
+			"ParamKey": CookieParamKey,
+			"Method": "SELECT",
+            "Id": UserId,
+			"Page": 1,
+			"RowPage": 20,
+			"OrderBy": "id",
+			"Order": "ASC"
+		});
+
+		var url = paths.URL_API_ADMIN + 'UserLogin';
+		var Signature  = generateSignature(requestBody)
+
+		fetch(url, {
+			method: "POST",
+			body: requestBody,
+			headers: {
+				'Content-Type': 'application/json',
+				'Signature': Signature
+			},
+		})
+		.then(fetchStatus)
+		.then(response => response.json())
+		.then((data) => {
+
+			if (data.ErrCode === "0") {
+                setUsername(data.Result[0].Username)
+                setNama(data.Result[0].Nama)
+                setAccess(data.Result[0].Role)
+			} else {
+				if (data.ErrCode === "2") {
+					setSessionMessage("Session Anda Telah Habis. Silahkan Login Kembali.");
+                    setShowAlert(true);
+					return false;
+				} else {
+					setErrorMessageAlert(data.ErrMessage);
+					setShowAlert(true);
+					return false;
+				}
+			}
+		})
+		.catch((error) => {
+			if (error.message === 401) {
+				setErrorMessageAlert("Maaf anda tidak memiliki ijin untuk mengakses halaman ini.");
+				setShowAlert(true);
+				return false;
+			} else if (error.message !== 401) {
+				setErrorMessageAlert(AlertMessage.failedConnect);
+				setShowAlert(true);
+				return false;
+			}
+		});
     }
     
     const simpanData = () => {
@@ -119,11 +189,11 @@ const InputAdminAccess = () => {
         }
 
         if (Nama === "") {
-            validasiMessage = validasiMessage + "- Silahkan isi Nama User terlebih dahulu.\n";
+            validasiMessage = validasiMessage + "- Silahkan isi Nama terlebih dahulu.\n";
         } else if (Nama.length < 5) {
-            validasiMessage = validasiMessage + "- Nama User minimal 5 karakter.\n";
+            validasiMessage = validasiMessage + "- Nama minimal 5 karakter.\n";
         } else if (Nama.length > 50) {
-            validasiMessage = validasiMessage + "- Nama User maksimal 50 karakter.\n";
+            validasiMessage = validasiMessage + "- Nama maksimal 50 karakter.\n";
         }
 
         if (Password === "") {
@@ -143,10 +213,8 @@ const InputAdminAccess = () => {
         if(Access === ""){
             validasiMessage = validasiMessage + "- Silahkan pilih Akses menu terlebih dahulu.\n";
         }
-
         
-        
-        if(validasiMessage !== ""){
+        if(validasiMessage!=""){
             setValidationMessage(validasiMessage);
             setShowAlert(true)
             return false;
@@ -168,12 +236,14 @@ const InputAdminAccess = () => {
 		var requestBody = JSON.stringify({
             "UsernameSession": CookieUsername,
             "ParamKey": CookieParamKey,
-            "Method": "INSERT",
+            "Method": "UPDATE",
+            "Id": UserId,
             "UsernameMaster": Username,
             "Nama": Nama,
             "Password": Password,
             "Role": Access
 		});
+
 
 		var url = paths.URL_API_ADMIN + 'UserLogin';
 		var Signature  = generateSignature(requestBody)
@@ -195,7 +265,7 @@ const InputAdminAccess = () => {
             setLoadingSave(false)
 
 			if (data.ErrCode === "0") {
-                setSuccessMessage("Berhasil Insert Data")
+                setSuccessMessage("Berhasil Update Data")
                 setShowAlert(true)
 			} else {
 				if (data.ErrCode === "2") {
@@ -316,11 +386,11 @@ const InputAdminAccess = () => {
             
             <div>
                 <button role="tab" aria-controls="merchant-list">
-                    <div style={{ color:'#004372', fontSize:16, fontWeight:'bold' }}>Input Admin Access</div>
+                    <div style={{ color:'#004372', fontSize:16, fontWeight:'bold' }}>Update Admin Access</div>
                 </button>
             </div>
             
-            <div style={{ backgroundColor:'#FFFFFF', height:'auto', width:'100%', borderBottomLeftRadius:25, borderBottomRightRadius:25, padding:20 }}>
+            <div style={{backgroundColor:'white', height:'auto', width:'100%', borderBottomLeftRadius:25, borderBottomRightRadius:25, padding:20, paddingTop:30}}>
                 
                 <div style={{ backgroundColor:'#FFFFFF', height:'auto', width:'100%', borderBottomLeftRadius:25, borderBottomRightRadius:25, borderTopRightRadius:25, padding:20, paddingTop:30 }}>
                     <div style={{ color:'#004372', cursor:'pointer' }} onClick={() => history.push('/user')}><FontAwesomeIcon icon={faArrowLeft} /> Back</div>
@@ -403,7 +473,7 @@ const InputAdminAccess = () => {
                             })}
                         </div>
                     </div>
-
+                    
                 </div>
 
                 <div style={{display:'flex', justifyContent:'flex-end', padding:20}}>
@@ -422,4 +492,4 @@ const InputAdminAccess = () => {
     )
 }
 
-export default InputAdminAccess;
+export default UpdateAdminAccess;

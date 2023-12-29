@@ -236,7 +236,7 @@ const LeftMenu = () => {
 							}
 							return <CDBSidebarMenuItem style={{ backgroundColor: form.PageActive === item.Menu && '#FFFFFF', borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10 }}>
 										<a href={item.Href} style={{ cursor:'pointer', textDecorationColor:'transparent' }}>
-											<div style={{ color: form.PageActive === item.Menu && '#004372' }}>{Icon} {item.Menu}</div>
+											<div style={{ color: form.PageActive === item.Menu && '#004372', fontWeight:form.PageActive === item.Menu &&'bold' }}>{Icon} {item.Menu}</div>
 										</a>
 									</CDBSidebarMenuItem>
 							})

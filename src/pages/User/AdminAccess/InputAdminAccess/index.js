@@ -64,6 +64,21 @@ const InputAdminAccess = () => {
 
 	useEffect(() => {
         window.scrollTo(0, 0)
+
+        var CookieParamKey = getCookie("paramkey");
+        var CookieUsername = getCookie("username");
+        var CookieRole = getCookie("role");
+        
+        if (CookieParamKey == null || CookieParamKey === "" || CookieUsername == null || CookieUsername === "") {
+            logout()
+            window.location.href="admin/login";
+            return false;
+        } else {
+            dispatch(setForm("ParamKey",CookieParamKey))
+            dispatch(setForm("Username",CookieUsername))
+            dispatch(setForm("PageActive","User"))
+        }
+
     },[])
 
 	const getCookie = (tipe) => {

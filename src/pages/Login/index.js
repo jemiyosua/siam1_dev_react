@@ -21,7 +21,7 @@ const Login = () => {
     const history = useHistory(historyConfig);
     const dispatch = useDispatch();
     const containerRef = useRef(null);
-    const [cookies, setCookie] = useCookies(['user']);
+    const [cookies, setCookie, removeCookie] = useCookies(['user']);
     const [Loading, setLoading] = useState(false)
     const [Username, setUsername] = useState();
     const [Password, setPassword] = useState();
@@ -29,15 +29,62 @@ const Login = () => {
     const [ValidationMessage, setValidationMessage] = useState("")
     const [ErrorMessageAlert, setErrorMessageAlert] = useState("")
 
-    const handleScroll = (scrollOffset) => {
-        if (containerRef.current) {
-          containerRef.current.scrollLeft += scrollOffset;
-        }
-    };
-
 	useEffect(() => {
         window.scrollTo(0, 0)
+
+        var CookieParamKey = getCookie("paramkey");
+        var CookieUsername = getCookie("username");
+
+        if ((CookieParamKey == null && CookieParamKey == null) && (CookieUsername == null && CookieUsername == null)) {
+            logout()
+            history.push('/admin/login');
+            return
+        } else {
+            // setEmail(CookieUserID)
+            // setPassword(cookies.CookiePass)
+            history.push('/admin/dashboard');
+            return
+        }
     },[])
+
+    const logout = ()=>{
+        removeCookie('varCookie', { path: '/'})
+        removeCookie('varMerchantId', { path: '/'})
+        removeCookie('varIdVoucher', { path: '/'})
+        dispatch(setForm("ParamKey",''))
+        dispatch(setForm("Username",''))
+        dispatch(setForm("Name",''))
+        dispatch(setForm("Role",''))
+        if (window) {
+            sessionStorage.clear();
+		}
+    }
+
+    const getCookie = (tipe) => {
+        var SecretCookie = cookies.varCookie;
+        if (SecretCookie !== "" && SecretCookie != null && typeof SecretCookie == "string") {
+            var LongSecretCookie = SecretCookie.split("|");
+            var UserName = LongSecretCookie[0];
+            var ParamKeyArray = LongSecretCookie[1];
+            var Nama = LongSecretCookie[2];
+            var Role = LongSecretCookie[3];
+            var ParamKey = ParamKeyArray.substring(0, ParamKeyArray.length)
+        
+            if (tipe === "username") {
+                return UserName;            
+            } else if (tipe === "paramkey") {
+                return ParamKey;
+            } else if (tipe === "nama") {
+                return Nama;
+            } else if (tipe === "role") {
+                return Role;
+            } else {
+                return null;
+            }
+        } else {
+            return null;
+        }
+    }
 
     const SubmitLogin = () => {
 

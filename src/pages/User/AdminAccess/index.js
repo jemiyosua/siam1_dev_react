@@ -20,7 +20,7 @@ const AdminAccess = () => {
     const history = useHistory(historyConfig);
     const dispatch = useDispatch();
     const containerRef = useRef(null);
-    // const [cookies, setCookie,removeCookie] = useCookies(['user']);
+
 	const [cookies, setCookie,removeCookie] = useCookies(['user']);
 	const [Name, setName] = useState("")
 	const [Loading, setLoading] = useState(false)
@@ -56,10 +56,22 @@ const AdminAccess = () => {
 	useEffect(() => {
         window.scrollTo(0, 0)
 
+        var CookieParamKey = getCookie("paramkey");
+        var CookieUsername = getCookie("username");
         var CookieRole = getCookie("role");
+        
+        if (CookieParamKey == null || CookieParamKey === "" || CookieUsername == null || CookieUsername === "") {
+            logout()
+            window.location.href="admin/login";
+            return false;
+        } else {
+            dispatch(setForm("ParamKey",CookieParamKey))
+            dispatch(setForm("Username",CookieUsername))
+            dispatch(setForm("PageActive","User"))
 
-        setRoleAccess(CookieRole)
-        getListUser(1, "")
+            setRoleAccess(CookieRole)
+            getListUser(1, "")
+        }
 
     },[])
 

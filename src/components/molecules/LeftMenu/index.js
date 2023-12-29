@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useCookies } from 'react-cookie';
 import { useHistory } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { AlertMessage, paths } from '../../../utils'
 import { historyConfig, generateSignature, fetchStatus } from '../../../utils/functions';
 import { setForm } from '../../../redux';
@@ -17,7 +17,7 @@ import {
 import { NavLink } from 'react-router-dom';
 import SweetAlert from 'react-bootstrap-sweetalert';
 import './LeftMenu.css';
-import { faChalkboardTeacher, faChalkboardUser, faGauge, faPerson, faSchool, faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDays, faChalkboardTeacher, faChalkboardUser, faChartPie, faGauge, faGear, faPerson, faSchool, faScrewdriver, faScrewdriverWrench, faScroll, faServer, faSignOutAlt, faUserTie } from '@fortawesome/free-solid-svg-icons';
 
 const LeftMenu = () => {
 	const history = useHistory(historyConfig);
@@ -26,6 +26,7 @@ const LeftMenu = () => {
 	const [cookies, setCookie, removeCookie] = useCookies(['user']);
 	const [ListMenuSidebar, setListMenuSidebar] = useState([])
 	const [Loading, setLoading] = useState(false)
+	const { form }=useSelector(state=>state.PaketReducer);
 	
 	const [ShowAlert, setShowAlert] = useState(true)
     const [SessionMessage, setSessionMessage] = useState("")
@@ -49,6 +50,8 @@ const LeftMenu = () => {
         if(window){
             sessionStorage.clear();
 		}
+		history.push('/admin/login')
+		return
     }
 
 	const getCookie = (tipe) => {
@@ -107,8 +110,6 @@ const LeftMenu = () => {
 		.then((data) => {
 
 			setLoading(false)
-
-			console.log("ok")
 
 			if (data.ErrCode === "0") {
 				setListMenuSidebar(data.Result)
@@ -216,16 +217,26 @@ const LeftMenu = () => {
 							var Icon = "";
 							if (item.Menu === "Dashboard") {
 								Icon = <FontAwesomeIcon icon={faGauge}/>
-							} else if (item.Menu === "Guru") {
-								Icon = <FontAwesomeIcon icon={faChalkboardTeacher}/>
-							} else if (item.Menu === "Siswa") {
+							} else if (item.Menu === "Tahun Pelajaran") {
+								Icon = <FontAwesomeIcon icon={faCalendarDays}/>
+							} else if (item.Menu === "Setting") {
+								Icon = <FontAwesomeIcon icon={faGear}/>
+							} else if (item.Menu === "Penerimaan Siswa Baru") {
 								Icon = <FontAwesomeIcon icon={faSchool}/>
+							} else if (item.Menu === "Master Data") {
+								Icon = <FontAwesomeIcon icon={faServer}/>
+							} else if (item.Menu === "Akademik & Kesiswaan") {
+								Icon = <FontAwesomeIcon icon={faChartPie}/>
+							} else if (item.Menu === "Administrasi") {
+								Icon = <FontAwesomeIcon icon={faUserTie}/>
 							} else if (item.Menu === "User") {
 								Icon = <FontAwesomeIcon icon={faPerson}/>
+							} else if (item.Menu === "Laporan") {
+								Icon = <FontAwesomeIcon icon={faScroll}/>
 							}
-							return <CDBSidebarMenuItem>
+							return <CDBSidebarMenuItem style={{ backgroundColor: form.PageActive === item.Menu && '#FFFFFF', borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10 }}>
 										<a href={item.Href} style={{ cursor:'pointer', textDecorationColor:'transparent' }}>
-											<div>{Icon} {item.Menu}</div>
+											<div style={{ color: form.PageActive === item.Menu && '#004372' }}>{Icon} {item.Menu}</div>
 										</a>
 									</CDBSidebarMenuItem>
 							})

@@ -38,8 +38,6 @@ const Dashboard = () => {
         var CookieNama = getCookie("nama");
         setName(CookieNama)
 
-		getListSiswa()
-
     },[])
 
 	const getCookie = (tipe) => {
@@ -63,67 +61,6 @@ const Dashboard = () => {
         } else {
             return null;
         }
-    }
-
-	const getListSiswa = () => {
-
-		var CookieParamKey = getCookie("paramkey");
-        var CookieUsername = getCookie("username");
-
-		var requestBody = JSON.stringify({
-			"UserName": CookieUsername,
-			"ParamKey": CookieParamKey,
-			"Method": "SELECT",
-			"Page": 1,
-			"RowPage": 20,
-			"OrderBy": "tgl_input",
-			"Order": "DESC"
-		});
-
-		var url = paths.URL_API_ADMIN + 'Siswa';
-		var Signature  = generateSignature(requestBody)
-
-		setLoading(true)
-
-		fetch(url, {
-			method: "POST",
-			body: requestBody,
-			headers: {
-				'Content-Type': 'application/json',
-				'Signature': Signature
-			},
-		})
-		.then(fetchStatus)
-		.then(response => response.json())
-		.then((data) => {
-			setLoading(false)
-
-			if (data.ErrCode === "0") {
-				setListSiswa(data.Result)
-			} else {
-				if (data.ErrCode === "2") {
-					setSessionMessage("Session Anda Telah Habis. Silahkan Login Kembali.");
-                    setShowAlert(true);
-					return false;
-				} else {
-					setErrorMessageAlert(data.ErrMessage);
-					setShowAlert(true);
-					return false;
-				}
-			}
-		})
-		.catch((error) => {
-			setLoading(false)
-			if (error.message === 401) {
-				setErrorMessageAlert("Maaf anda tidak memiliki ijin untuk mengakses halaman ini.");
-				setShowAlert(true);
-				return false;
-			} else if (error.message !== 401) {
-				setErrorMessageAlert(AlertMessage.failedConnect);
-				setShowAlert(true);
-				return false;
-			}
-		});
     }
 
 	const logout = ()=>{
@@ -198,7 +135,7 @@ const Dashboard = () => {
 
 			<div style={{ fontWeight:'bold', color:'#004372', fontSize:30 }}>Welcome, {Name}</div>
 
-			<Gap height={30} />
+			{/* <Gap height={30} />
 
 			{ListSiswa.length > 0 && ListSiswa.map((item,index) => {
 				return <div>
@@ -206,7 +143,7 @@ const Dashboard = () => {
 					<div>Nama : {item.Nama}</div>
 					<Gap height={20} />
 				</div>
-			})}
+			})} */}
 		</div>
     )
 }

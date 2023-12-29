@@ -5,6 +5,7 @@ import { BrowserRouter , Route, Switch, useHistory, useRouteMatch } from 'react-
 import LeftMenu from '../../components/molecules/LeftMenu'
 import { historyConfig } from '../../utils/functions'
 import Dashboard from '../Dashboard'
+import MasterData from '../MasterData'
 import User from '../User'
 import InputAdminAccess from '../User/AdminAccess/InputAdminAccess'
 import UpdateAdminAccess from '../User/AdminAccess/UpdateAdminAccess'
@@ -48,6 +49,9 @@ const MainApp = () => {
                         <Switch>
                             <Route exact path="/dashboard">
                                 <Dashboard />
+                            </Route>
+                            <Route exact path="/master-data">
+                                <MasterData />
                             </Route>
                             <Route exact path="/user">
                                 <User />

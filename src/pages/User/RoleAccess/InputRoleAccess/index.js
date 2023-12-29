@@ -33,6 +33,19 @@ const InputRoleAccess = () => {
 
 	useEffect(() => {
         window.scrollTo(0, 0)
+
+        var CookieParamKey = getCookie("paramkey");
+        var CookieUsername = getCookie("username");
+        
+        if (CookieParamKey == null || CookieParamKey === "" || CookieUsername == null || CookieUsername === "") {
+            logout()
+            window.location.href="admin/login";
+            return false;
+        } else {
+            dispatch(setForm("ParamKey",CookieParamKey))
+            dispatch(setForm("Username",CookieUsername))
+            dispatch(setForm("PageActive","User"))
+        }
     },[])
 
 	const getCookie = (tipe) => {

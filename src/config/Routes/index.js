@@ -16,6 +16,9 @@ const Routes = () => {
 				<Route path='/admin/dashboard'>
 					<MainApp/>
 				</Route>
+				<Route path='/admin/master-data'>
+					<MainApp/>
+				</Route>
 				<Route path='/admin/user'>
 					<MainApp/>
 				</Route>

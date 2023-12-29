@@ -7,10 +7,12 @@ import { useDispatch } from 'react-redux';
 import { historyConfig, generateSignature, fetchStatus } from '../../utils/functions';
 import { setForm } from '../../redux';
 import SweetAlert from 'react-bootstrap-sweetalert';
-import AdminAccess from './AdminAccess'
-import RoleAccess from './RoleAccess'
+// import AdminAccess from './AdminAccess'
+// import RoleAccess from './RoleAccess'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPerson } from '@fortawesome/free-solid-svg-icons';
+import { faBaseball, faBasketball, faBook, faChevronRight, faDatabase, faGear, faGraduationCap, faHandsHolding, faPeopleGroup, faPerson, faPersonChalkboard, faPersonCircleCheck, faServer, faUsersGear } from '@fortawesome/free-solid-svg-icons';
+import { Col, Row } from 'react-bootstrap';
+import { AlertMessage, paths } from '../../utils'
 
 const User = () => {
     const history = useHistory(historyConfig);
@@ -19,6 +21,9 @@ const User = () => {
     // const [cookies, setCookie,removeCookie] = useCookies(['user']);
 	const [cookies, setCookie,removeCookie] = useCookies(['user']);
 	
+    const [Loading, setLoading] = useState(false)
+    const [ListSubMenu, setListSubMenu] = useState([])
+
 	const [ShowAlert, setShowAlert] = useState(true)
     const [SessionMessage, setSessionMessage] = useState("")
     const [ErrorMessageAlert, setErrorMessageAlert] = useState("")
@@ -47,7 +52,9 @@ const User = () => {
         } else {
             dispatch(setForm("ParamKey",CookieParamKey))
             dispatch(setForm("Username",CookieUsername))
-            dispatch(setForm("PageActive","User"))
+            dispatch(setForm("PageActive","Master Data"))
+
+            getSubMenu()
         }
 
         setCookie('varHistoryPage', '')
@@ -80,6 +87,68 @@ const User = () => {
         }
     }
 
+    const getSubMenu = (Page, Position) => {
+
+		var CookieParamKey = getCookie("paramkey");
+        var CookieUsername = getCookie("username");
+
+		var requestBody = JSON.stringify({
+            "UserName": CookieUsername,
+            "ParamKey": CookieParamKey,
+            "Method": "SELECT",
+            "MenuId": "5",
+            "Page": 1,
+            "RowPage": 20,
+            "OrderBy": "id",
+            "Order": "ASC"
+        });
+
+		var url = paths.URL_API_ADMIN + 'SubMenu';
+		var Signature  = generateSignature(requestBody)
+
+		setLoading(true)
+
+		fetch(url, {
+			method: "POST",
+			body: requestBody,
+			headers: {
+				'Content-Type': 'application/json',
+				'Signature': Signature
+			},
+		})
+		.then(fetchStatus)
+		.then(response => response.json())
+		.then((data) => {
+			setLoading(false)
+
+			if (data.ErrCode === "0") {
+				setListSubMenu(data.Result)
+			} else {
+				if (data.ErrCode === "2") {
+					setSessionMessage("Session Anda Telah Habis. Silahkan Login Kembali.");
+                    setShowAlert(true);
+					return false;
+				} else {
+					setErrorMessageAlert(data.ErrMessage);
+					setShowAlert(true);
+					return false;
+				}
+			}
+		})
+		.catch((error) => {
+			setLoading(false)
+			if (error.message === 401) {
+				setErrorMessageAlert("Maaf anda tidak memiliki ijin untuk mengakses halaman ini.");
+				setShowAlert(true);
+				return false;
+			} else if (error.message !== 401) {
+				setErrorMessageAlert(AlertMessage.failedConnect);
+				setShowAlert(true);
+				return false;
+			}
+		});
+    }
+
 	const logout = () => {
         removeCookie('varCookie', { path: '/'})
         removeCookie('varMerchantId', { path: '/'})
@@ -98,8 +167,8 @@ const User = () => {
            
             <div className="content-wrapper-2" style={{ backgroundColor:'#F6FBFF', width:'100%' }} >
                 <div className="blog-post">
-                    <div style={{ fontWeight:'bold', color:'#004372', fontSize:30 }}><FontAwesomeIcon icon={faPerson}/> User</div>
-                    <p style={{ margin:0 }}>Here's for all Admin from SIAM platform.</p>
+                    <div style={{ fontWeight:'bold', color:'#004372', fontSize:30 }}><FontAwesomeIcon icon={faServer}/> Master Data</div>
+                    <p style={{ margin:0 }}>Here's Master Data from SIAM platform.</p>
 
                     {/* ALERT */}
                     {SessionMessage !== "" ?
@@ -146,7 +215,40 @@ const User = () => {
                     
                     <Gap height={20} />
 
-                    {StateTabsAdminAccess ?
+                    <Row>
+                        <Col xs={3} md={6} lg={12} style={{ paddingRight:6 }}>
+                            {ListSubMenu.length > 0 && ListSubMenu.map((item,index) => {
+                                var Icon = ""
+                                if (item.SubMenu === "Daftar Siswa") {
+                                    Icon = <FontAwesomeIcon icon={faGraduationCap}/>
+                                } else if (item.SubMenu === "Daftar Guru") {
+                                    Icon = <FontAwesomeIcon icon={faPersonChalkboard}/>
+                                } else if (item.SubMenu === "Mata Pelajaran") {
+                                    Icon = <FontAwesomeIcon icon={faBook}/>
+                                } else if (item.SubMenu === "Ekstrakulikuler") {
+                                    Icon = <FontAwesomeIcon icon={faBasketball}/>
+                                } else if (item.SubMenu === "Organisasi") {
+                                    Icon = <FontAwesomeIcon icon={faPeopleGroup}/>
+                                } else if (item.SubMenu === "Bimbingan Konseling") {
+                                    Icon = <FontAwesomeIcon icon={faHandsHolding}/>
+                                } else if (item.SubMenu === "Penilaian Kepribadian") {
+                                    Icon = <FontAwesomeIcon icon={faPersonCircleCheck}/>
+                                } else {
+                                    Icon = <FontAwesomeIcon icon={faGear}/>
+                                }
+                                return  <div style={{ backgroundColor:'#EAECEE', width:'100%', marginBottom:10, borderTopLeftRadius:10, borderTopRightRadius:10, borderBottomLeftRadius:10, borderBottomRightRadius:10 }}>
+                                    <div style={{ display:'flex', padding:20, alignItems:'center', justifyContent:'space-between' }}>
+                                        <div style={{ display:'flex', alignItems:'center', fontWeight:'bold' }}>
+                                            {Icon}<div style={{ paddingRight:10 }} />{item.SubMenu}
+                                        </div>
+                                        <FontAwesomeIcon icon={faChevronRight}/>
+                                    </div>
+                                </div>
+                            })}
+                        </Col>
+                    </Row>
+
+                    {/* {StateTabsAdminAccess ?
                     <div>
                         <div style={{ display:'flex' }}>
                             <div>
@@ -180,7 +282,7 @@ const User = () => {
                     <AdminAccess />
                     :
                     <RoleAccess />
-                    }
+                    } */}
 
                     <Gap height={10} />
 
